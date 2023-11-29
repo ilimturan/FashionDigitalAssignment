@@ -1,7 +1,8 @@
 package org.ilimturan.models
 
+import akka.http.scaladsl.model.ContentType
+import org.apache.commons.io.input.BOMInputStream
 import org.ilimturan.enums.SPEECH_PROCESS_STATUS.SPEECH_PROCESS_STATUS
-import org.ilimturan.enums.STATUS.STATUS
 import org.joda.time.DateTime
 
 import java.util.Date
@@ -21,22 +22,13 @@ case class SpeechFileProcess(
     insertTime: DateTime
 )
 
-case class Politician(
-    id: Long,
-    name: String,
-    status: STATUS
-)
-
-case class Topic(
-    id: Long,
-    name: String,
-    status: STATUS
-)
-
 case class PoliticalSpeech(
     id: Long,
-    politicianId: Long,
-    topicId: Long,
+    politicianName: String,
+    topicName: String,
     wordCount: Int,
     speechDate: Date
 )
+//text/csv
+case class TemporaryDownloadData(contentType: ContentType, inputStream: BOMInputStream)
+

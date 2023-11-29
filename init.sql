@@ -7,7 +7,7 @@ CREATE TYPE SPEECH_PROCESS_STATUS AS ENUM ('READY', 'DOWNLOADED', 'PARSING', 'CO
 
 CREATE TABLE speech_request(
     id BIGSERIAL NOT NULL PRIMARY KEY,
-    urls TEXT NOT NULL, --all urls string
+    urls TEXT NOT NULL, --all urls as string
     insertTime TIMESTAMP(3) DEFAULT NOW() NOT NULL
 );
 
@@ -22,29 +22,16 @@ CREATE TABLE speech_file_process(
 
 CREATE INDEX ON speech_file_process(requestId);
 
-CREATE TABLE politician(
-    id BIGSERIAL NOT NULL PRIMARY KEY,
-    name TEXT NOT NULL,
-    status STATUS NOT NULL
-);
-CREATE UNIQUE INDEX ON politician(name);
-
-CREATE TABLE topic(
-    id BIGSERIAL NOT NULL PRIMARY KEY,
-    name TEXT NOT NULL,
-    status STATUS NOT NULL
-);
-CREATE UNIQUE INDEX ON topic(name);
 
 CREATE TABLE political_speech(
     id BIGSERIAL NOT NULL PRIMARY KEY,
-    politicianId BIGINT REFERENCES politician,
-    topicId BIGINT REFERENCES topic,
+    politicianName TEXT NOT NULL,
+    topicName TEXT NOT NULL,
     wordCount INT NOT NULL,
     speechDate DATE NOT NULL
 );
 
-CREATE INDEX ON political_speech(politicianId, topicId);
+CREATE INDEX ON political_speech(politicianName, topicName);
 CREATE INDEX ON political_speech(speechDate);
-CREATE INDEX ON political_speech(topicId);
+CREATE INDEX ON political_speech(topicName);
 
