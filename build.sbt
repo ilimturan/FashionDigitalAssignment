@@ -5,7 +5,7 @@ organization := "org.ilimturan"
 version := "1.0.0"
 
 libraryDependencies ++= {
-  val akkaV             = "2.6.18"
+  val akkaV             = "2.6.19"
   val akkaHttpV         = "10.2.7"
   val quillV            = "3.5.3"
   val scalaLoggingV     = "3.9.2"

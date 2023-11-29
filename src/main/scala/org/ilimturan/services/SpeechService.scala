@@ -20,10 +20,17 @@ class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext) exten
     val validUrlSet   = urlSet.filter(url => SpeechValidator.isValidUrl(url))
     val invalidUrlSet = urlSet diff validUrlSet
 
-    if (invalidUrlSet.nonEmpty || validUrlSet.isEmpty) {
+    if (invalidUrlSet.nonEmpty) {
       Future.successful(
         Left(
-          s"Your request contains invalid urls, valid [${validUrlSet.mkString(",")}]  invalid [${invalidUrlSet.mkString(",")}] "
+          s"Your request contains invalid urls, valid [${validUrlSet.mkString(",")}], invalid [${invalidUrlSet.mkString(",")}]"
+        )
+      )
+    }
+    else if (validUrlSet.isEmpty) {
+      Future.successful(
+        Left(
+          s"Your request url's empty"
         )
       )
     } else {
@@ -53,6 +60,7 @@ class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext) exten
 
         }
         .recover { case e: Exception =>
+          logger.error(e.getMessage)
           Left(s"Your request can not queued: " + e.getMessage)
         }
     }

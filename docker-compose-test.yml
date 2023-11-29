@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:12.6
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=ad@2343fsdf@SF
+      - POSTGRES_DATABASE=fashion_digital_assignment_test
+    volumes:
+      - ./init_test.sql:/docker-entrypoint-initdb.d/init_test.sql
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge
