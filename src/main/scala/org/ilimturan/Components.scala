@@ -6,7 +6,7 @@ import com.typesafe.scalalogging.StrictLogging
 import io.getquill.{CamelCase, PostgresAsyncContext}
 import org.ilimturan.config.PostgresConfig
 import org.ilimturan.repos.SpeechRepo
-import org.ilimturan.services.SpeechService
+import org.ilimturan.services.{DownloadService, SpeechService}
 
 import java.util.concurrent.Executors
 import scala.concurrent.ExecutionContext
@@ -22,6 +22,7 @@ trait Components extends StrictLogging {
   implicit lazy val postgresCtx: PostgresAsyncContext[CamelCase.type] =
     new PostgresAsyncContext(CamelCase, PostgresConfig.dbPostgresConfig)
 
-  lazy val speechRepo    = new SpeechRepo()(postgresCtx, dbEc)
-  lazy val speechService = new SpeechService(speechRepo)
+  lazy val speechRepo      = new SpeechRepo()(postgresCtx, dbEc)
+  lazy val speechService   = new SpeechService(speechRepo)
+  lazy val downloadService = new DownloadService()
 }

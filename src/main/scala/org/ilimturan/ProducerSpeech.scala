@@ -10,11 +10,11 @@ import org.ilimturan.routes.RoutesProducer
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-object ProducerDownload extends App with StrictLogging with Components {
+object ProducerSpeech extends App with StrictLogging with Components {
 
-  logger.info("APP STARTING [ProducerDownload] ...")
+  logger.info("APP STARTING [ProducerSpeech] ...")
 
-  implicit val actorSystem = ActorSystem("ProducerDownload")
+  implicit val actorSystem = ActorSystem("ProducerSpeech")
   implicit val mat         = Materializer(actorSystem)
   implicit val ec          = actorSystem.dispatcher
 
@@ -25,15 +25,15 @@ object ProducerDownload extends App with StrictLogging with Components {
       .newServerAt(ProducerConfig.httpHost, ProducerConfig.httpPort)
       .bindFlow(routes.routes)
       .map { _ =>
-        logger.info(s"APP STARTED [ProducerDownload] AT PORT:${ProducerConfig.httpPort} ...")
+        logger.info(s"APP STARTED [ProducerSpeech] AT PORT:${ProducerConfig.httpPort} ...")
       }
       .recover { case e: Throwable =>
-        logger.error("ERROR WHEN START APP [ProducerDownload]", e)
+        logger.error("ERROR WHEN START APP [ProducerSpeech]", e)
         throw e
       }
   } catch {
     case cause: Throwable =>
-      logger.error("EXCEPTION WHEN START APP [ProducerDownload] ", cause)
+      logger.error("EXCEPTION WHEN START APP [ProducerSpeech] ", cause)
       Await.result(actorSystem.terminate(), 10.seconds)
       System.exit(1)
   }

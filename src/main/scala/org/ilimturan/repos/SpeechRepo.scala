@@ -1,10 +1,11 @@
 package org.ilimturan.repos
 
 import io.getquill.{CamelCase, PostgresAsyncContext}
+import org.ilimturan.enums.SPEECH_PROCESS_STATUS
 import org.ilimturan.implicits.QuillImplicit
 import org.ilimturan.models._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class SpeechRepo(implicit val dbCtx: PostgresAsyncContext[CamelCase.type], ec: ExecutionContext) extends QuillImplicit {
 
@@ -13,21 +14,36 @@ class SpeechRepo(implicit val dbCtx: PostgresAsyncContext[CamelCase.type], ec: E
 
   import dbCtx._
 
-  val tableSpecRequest       = quote(querySchema[SpeechRequest]("speech_request"))
-  val tableSpeechFileProcess = quote(querySchema[SpeechFileProcess]("speech_file_process"))
-  val tablePolitician        = quote(querySchema[Politician]("politician"))
-  val tableTopic             = quote(querySchema[Topic]("topic"))
-  val tablePoliticalSpeech   = quote(querySchema[PoliticalSpeech]("political_speech"))
+  val specRequestTable       = quote(querySchema[SpeechRequest]("speech_request"))
+  val speechFileProcessTable = quote(querySchema[SpeechFileProcess]("speech_file_process"))
+  val politicalSpeechTable   = quote(querySchema[PoliticalSpeech]("political_speech"))
 
-  implicit val speechRequestMeta     = insertMeta[SpeechRequest](_.id)     // to exclude id on insert
+  implicit val specRequestMeta       = insertMeta[SpeechRequest](_.id)     // to exclude id on insert
   implicit val speechFileProcessMeta = insertMeta[SpeechFileProcess](_.id) // to exclude id on insert
+  implicit val politicalSpeechMeta   = insertMeta[PoliticalSpeech](_.id)   // to exclude id on insert
 
   private def insertSpeechRequest(speechRequest: SpeechRequest) = quote {
-    tableSpecRequest.insert(lift(speechRequest)).returning(speechRequest => speechRequest)
+    specRequestTable.insert(lift(speechRequest)).returning(speechRequest => speechRequest)
   }
 
   private def insertSpeechFileProcess(speechFileProcess: SpeechFileProcess) = quote {
-    tableSpeechFileProcess.insert(lift(speechFileProcess)).returning(speechFileProcess => speechFileProcess)
+    speechFileProcessTable.insert(lift(speechFileProcess)).returning(speechFileProcess => speechFileProcess)
+  }
+
+  private def insertPoliticalSpeech(politicalSpeech: PoliticalSpeech) = quote {
+    politicalSpeechTable.insert(lift(politicalSpeech)).returning(politicalSpeech => politicalSpeech)
+  }
+
+  def updateJob(speechFileProcess: SpeechFileProcess) = {
+    val query = quote {
+      speechFileProcessTable
+        .filter(_.id == lift(speechFileProcess.id))
+        .update(lift(speechFileProcess))
+        .returning(row => row)
+    }
+
+    dbCtx
+      .run(query)
   }
 
   def addSpeechRequest(speechRequest: SpeechRequest) = {
@@ -38,6 +54,25 @@ class SpeechRepo(implicit val dbCtx: PostgresAsyncContext[CamelCase.type], ec: E
   def addSpeechFileProcess(speechFileProcess: SpeechFileProcess) = {
     dbCtx
       .run(insertSpeechFileProcess(speechFileProcess))
+  }
+
+  def getLatestJob(): Future[Option[SpeechFileProcess]] = {
+
+    val query = quote {
+      speechFileProcessTable
+        .filter(_.status == lift(SPEECH_PROCESS_STATUS.READY))
+        .sortBy(_.id)
+        .take(1)
+    }
+
+    dbCtx
+      .run(query)
+      .map(_.headOption)
+  }
+
+  def addPoliticalSpeech(politicalSpeech: PoliticalSpeech) = {
+    dbCtx
+      .run(insertPoliticalSpeech(politicalSpeech))
   }
 
 }

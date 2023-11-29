@@ -2,7 +2,7 @@ package org.ilimturan.services
 
 import com.typesafe.scalalogging.StrictLogging
 import org.ilimturan.enums.SPEECH_PROCESS_STATUS
-import org.ilimturan.models.{SpeechFileProcess, SpeechRequest}
+import org.ilimturan.models._
 import org.ilimturan.repos.SpeechRepo
 import org.ilimturan.validator.SpeechValidator
 import org.joda.time.DateTime
@@ -53,10 +53,22 @@ class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext) exten
 
         }
         .recover { case e: Exception =>
-          Left(s"Your request can not queued")
+          Left(s"Your request can not queued: " + e.getMessage)
         }
     }
 
+  }
+
+  def getLatestJob(): Future[Option[SpeechFileProcess]] = {
+    speechRepo.getLatestJob()
+  }
+
+  def updateJob(speechFileProcess: SpeechFileProcess): Future[SpeechFileProcess] = {
+    speechRepo.updateJob(speechFileProcess)
+  }
+
+  def addPoliticalSpeech(politicalSpeech: PoliticalSpeech): Future[PoliticalSpeech] = {
+    speechRepo.addPoliticalSpeech(politicalSpeech)
   }
 
 }

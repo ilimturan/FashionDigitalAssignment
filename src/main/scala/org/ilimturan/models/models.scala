@@ -32,3 +32,9 @@ case class PoliticalSpeech(
 //text/csv
 case class TemporaryDownloadData(contentType: ContentType, inputStream: BOMInputStream)
 
+case class PoliticParsed(
+    speaker: String,
+    topic: String,
+    dateOfSpeech: Date,
+    wordCount: Int
+)
