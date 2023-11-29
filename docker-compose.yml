@@ -14,26 +14,6 @@ services:
     networks:
       - my-network
 
-  service-producer:
-    build:
-      context: "."
-      dockerfile: Dockerfile
-    depends_on:
-      - "postgres"
-    ports:
-      - "8080:8080"
-    environment:
-      - POSTGRES_HOST=host.docker.internal
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=ad@2343fsdf@SF
-      - POSTGRES_DATABASE=fashion_digital_assignment
-      - POSTGRES_HOST_AUTH_METHOD=md5
-    links:
-      - postgres
-    networks:
-      - my-network
-
 networks:
   my-network:
     driver: bridge
