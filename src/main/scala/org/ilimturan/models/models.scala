@@ -7,13 +7,13 @@ import org.joda.time.DateTime
 import java.util.Date
 
 case class SpeechRequest(
-    id: Option[Long],
+    id: Long,
     urls: String,
     insertTime: DateTime
 )
 
 case class SpeechFileProcess(
-    id: Option[Long],
+    id: Long,
     requestId: Long,
     url: String,
     status: SPEECH_PROCESS_STATUS,
@@ -22,19 +22,19 @@ case class SpeechFileProcess(
 )
 
 case class Politician(
-    id: Option[Long],
+    id: Long,
     name: String,
     status: STATUS
 )
 
 case class Topic(
-    id: Option[Long],
+    id: Long,
     name: String,
     status: STATUS
 )
 
 case class PoliticalSpeech(
-    id: Option[Long],
+    id: Long,
     politicianId: Long,
     topicId: Long,
     wordCount: Int,
