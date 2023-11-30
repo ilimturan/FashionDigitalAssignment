@@ -1,21 +1,16 @@
 package org.ilimturan.unit
 
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.typesafe.scalalogging.StrictLogging
 import org.ilimturan.services.DownloadService
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
-import org.scalatestplus.mockito.MockitoSugar
+import org.scalatest.{Matchers, WordSpec}
 
 class DownloadServiceSpecs
     extends WordSpec
     with Matchers
-    with MockitoSugar
-    with BeforeAndAfterAll
     with ScalatestRouteTest
-    with SprayJsonSupport
     with StrictLogging
     with ScalaFutures {
 

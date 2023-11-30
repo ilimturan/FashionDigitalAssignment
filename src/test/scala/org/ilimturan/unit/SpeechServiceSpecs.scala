@@ -1,9 +1,6 @@
 package org.ilimturan.unit
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest}
-import akka.stream.Materializer
 import akka.testkit.TestDuration
 import com.typesafe.scalalogging.StrictLogging
 import org.ilimturan.enums.SPEECH_PROCESS_STATUS
@@ -13,7 +10,7 @@ import org.ilimturan.services.SpeechService
 import org.joda.time.DateTime
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
+import org.scalatest.{Matchers, WordSpec}
 import org.scalatestplus.mockito.MockitoSugar
 
 import java.util.Date
@@ -23,18 +20,12 @@ class SpeechServiceSpecs
     extends WordSpec
     with Matchers
     with MockitoSugar
-    with BeforeAndAfterAll
     with ScalatestRouteTest
-    with SprayJsonSupport
     with StrictLogging
     with ScalaFutures {
 
   implicit val timeout: RouteTestTimeout = RouteTestTimeout(30.seconds.dilated)
   //override implicit val patienceConfig: PatienceConfig = PatienceConfig(timeout = scaled(Span(10, Seconds)))
-
-  implicit val actorSystem = ActorSystem("ConsumerSpeech")
-  implicit val mat         = Materializer(actorSystem)
-  implicit val ec          = actorSystem.dispatcher
 
   "run SpeechService mocked tests" should {
 

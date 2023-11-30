@@ -18,17 +18,14 @@ import scala.concurrent.duration.DurationInt
 
 class ProducerIntegrationSpecs extends WordSpec with Matchers with ScalatestRouteTest with StrictLogging {
 
-  implicit val timeout: RouteTestTimeout = RouteTestTimeout(30.seconds.dilated)
-  implicit val actorSystem               = ActorSystem()
-  implicit val executionContext          = actorSystem.dispatcher
-
-  implicit lazy val postgresCtx: PostgresAsyncContext[CamelCase.type] =
+  implicit val timeout: RouteTestTimeout                = RouteTestTimeout(30.seconds.dilated)
+  implicit val actorSystem                              = ActorSystem()
+  implicit val executionContext                         = actorSystem.dispatcher
+  val postgresCtx: PostgresAsyncContext[CamelCase.type] =
     new PostgresAsyncContext(CamelCase, PostgresConfig.dbPostgresConfig)
-
-  lazy val speechRepo    = new SpeechRepo()(postgresCtx, dbEc)
-  lazy val speechService = new SpeechService(speechRepo)
-
-  val route = new RoutesProducer(speechService)
+  val speechRepo                                        = new SpeechRepo()(postgresCtx, dbEc)
+  val speechService                                     = new SpeechService(speechRepo)
+  val route                                             = new RoutesProducer(speechService)
 
   "run 'health' endpoint tests" should {
 

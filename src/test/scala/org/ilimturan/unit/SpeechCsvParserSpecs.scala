@@ -8,11 +8,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{Matchers, WordSpec}
 
-class SpeechCsvParserSpecs
-    extends WordSpec
-    with Matchers
-    with ScalatestRouteTest
-    with ScalaFutures {
+class SpeechCsvParserSpecs extends WordSpec with Matchers with ScalatestRouteTest with ScalaFutures {
 
   // for futureValue timeout
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(timeout = scaled(Span(3, Seconds)))
