@@ -3,20 +3,16 @@ package org.ilimturan.parser
 import akka.NotUsed
 import akka.stream.alpakka.csv.scaladsl.{CsvParsing, CsvToMap}
 import akka.stream.scaladsl.{Source, StreamConverters}
-import akka.stream.{ActorAttributes, Materializer, Supervision}
+import akka.stream.{ActorAttributes, Supervision}
 import com.typesafe.scalalogging.StrictLogging
 import org.apache.commons.io.input.BOMInputStream
 import org.ilimturan.models.PoliticParsed
 
 import java.text.SimpleDateFormat
 import java.util.Date
-import scala.concurrent.ExecutionContext
 import scala.util.Try
 
-class SpeechCsvParser()(implicit
-    ec: ExecutionContext,
-    mat: Materializer
-) extends StrictLogging {
+class SpeechCsvParser() extends StrictLogging {
 
   private val delimiter  = ','.toByte
   private val escapeChar = '\"'.toByte
