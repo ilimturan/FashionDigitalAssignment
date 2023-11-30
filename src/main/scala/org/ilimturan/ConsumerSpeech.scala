@@ -6,6 +6,7 @@ import akka.stream.Materializer
 import com.typesafe.scalalogging.StrictLogging
 import org.ilimturan.config.ConsumerConfig
 import org.ilimturan.consumer.SpeechConsumer
+import org.ilimturan.parser.SpeechCsvParser
 import org.ilimturan.routes.RoutesConsumer
 
 import scala.concurrent.Await
@@ -26,7 +27,9 @@ object ConsumerSpeech extends App with StrictLogging with Components {
       .newServerAt(ConsumerConfig.httpHost, ConsumerConfig.httpPort)
       .bindFlow(routes.routes)
       .map { _ =>
-        val consumer = new SpeechConsumer(speechService, downloadService)
+
+        val parser   = new SpeechCsvParser()
+        val consumer = new SpeechConsumer(speechService, parser, downloadService)
         consumer.init()
 
         logger.info(s"APP STARTED [ConsumerSpeech] AT PORT:${ConsumerConfig.httpPort} ...")

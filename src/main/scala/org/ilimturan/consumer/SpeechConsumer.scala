@@ -2,29 +2,22 @@ package org.ilimturan.consumer
 
 import akka.NotUsed
 import akka.actor.Cancellable
-import akka.stream.alpakka.csv.scaladsl.{CsvParsing, CsvToMap}
-import akka.stream.scaladsl.{Sink, Source, StreamConverters}
-import akka.stream.{ActorAttributes, Materializer, OverflowStrategy, Supervision}
+import akka.stream.scaladsl.{Sink, Source}
+import akka.stream.{Materializer, OverflowStrategy}
 import com.typesafe.scalalogging.StrictLogging
-import org.apache.commons.io.input.BOMInputStream
 import org.ilimturan.enums.SPEECH_PROCESS_STATUS
 import org.ilimturan.models.{PoliticParsed, PoliticalSpeech}
+import org.ilimturan.parser.SpeechCsvParser
 import org.ilimturan.services.{DownloadService, SpeechService}
 
-import java.text.SimpleDateFormat
-import java.util.Date
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
-class SpeechConsumer(speechService: SpeechService, downloadService: DownloadService)(implicit
+class SpeechConsumer(speechService: SpeechService, speechCsvParser: SpeechCsvParser, downloadService: DownloadService)(
+    implicit
     ec: ExecutionContext,
     mat: Materializer
 ) extends StrictLogging {
-
-  private val delimiter  = ','.toByte
-  private val escapeChar = '\"'.toByte
-  private val dateFormat = new SimpleDateFormat("yyyy-MM-dd")
 
   def init() = {
     tickSource
@@ -54,13 +47,13 @@ class SpeechConsumer(speechService: SpeechService, downloadService: DownloadServ
                     .updateJob(job.copy(status = SPEECH_PROCESS_STATUS.FAILED, failReason = Some(msg)))
                     .map(_ => 0)
 
-                case Right(data) =>
+                case Right(data) => //TOOD check content type
                   //file downloaded, lets parse it
                   val updateJobDownloadedF =
                     speechService.updateJob(job.copy(status = SPEECH_PROCESS_STATUS.DOWNLOADED))
-                  val source               = toAkkaSource(data.inputStream)
+                  val source               = speechCsvParser.toAkkaSource(data.inputStream)
                   val updateJobParsingF    = speechService.updateJob(job.copy(status = SPEECH_PROCESS_STATUS.PARSING))
-                  val sourceResultF        = parseSource(source)
+                  val sourceResultF        = persistPoliticParsedSource(source)
 
                   val finalResultF = for {
                     _            <- updateJobDownloadedF
@@ -88,7 +81,7 @@ class SpeechConsumer(speechService: SpeechService, downloadService: DownloadServ
 
     }
 
-  private def parseSource(source: Source[PoliticParsed, NotUsed]) = {
+  private def persistPoliticParsedSource(source: Source[PoliticParsed, NotUsed]): Future[Int] = {
     source
       .throttle(1000, 1.seconds)
       .buffer(500, OverflowStrategy.backpressure)
@@ -106,67 +99,6 @@ class SpeechConsumer(speechService: SpeechService, downloadService: DownloadServ
         }
         acc + x
       }
-  }
-
-  private val deciderParse: Supervision.Decider = { case e: Exception =>
-    logger.error("Decider exc CSV parse: " + e)
-    Supervision.Resume
-  }
-
-  private def toAkkaSource(
-      bomInputStream: BOMInputStream
-  ): Source[PoliticParsed, NotUsed] = {
-
-    StreamConverters
-      .fromInputStream(in = () => bomInputStream, chunkSize = 8196 * 16)
-      .via(CsvParsing.lineScanner(delimiter = delimiter, maximumLineLength = Int.MaxValue, escapeChar = escapeChar))
-      .withAttributes(ActorAttributes.supervisionStrategy(deciderParse))
-      .via(CsvToMap.toMapAsStringsCombineAll(customFieldValuePlaceholder = Option("missing")))
-      .mapMaterializedValue(_ => NotUsed)
-      .map { offerMap =>
-        Try {
-
-          val offerMapFixed = offerMap.map { case (k, v) =>
-            k.trim -> v.trim
-          }.toMap
-
-          PoliticParsed(
-            speaker = offerMapFixed
-              .get("Redner")
-              .map(cleanWhitespaces)
-              .filter(_.nonEmpty)
-              .getOrElse("INVALID"),
-            topic = offerMapFixed
-              .get("Thema")
-              .map(cleanWhitespaces)
-              .filter(_.nonEmpty)
-              .getOrElse("INVALID"),
-            dateOfSpeech = offerMapFixed
-              .get("Datum")
-              .map(cleanWhitespaces)
-              .filter(_.nonEmpty)
-              .map(dateFormat.parse(_))
-              .getOrElse(new Date()),
-            wordCount = offerMapFixed
-              .get("Wörter")
-              .map(cleanWhitespaces)
-              .filter(_.nonEmpty)
-              .map(_.toInt)
-              .getOrElse(0)
-          )
-        }.toOption
-      }
-      .collect { case Some(row) =>
-        //TODO filter invalid
-        row
-      }
-  }
-
-  def cleanWhitespaces(text: String): String = {
-    text
-      .replaceAll("(\\r|\\n)", " ")
-      .trim
-      .replaceAll("\\s+", " ")
   }
 
 }
