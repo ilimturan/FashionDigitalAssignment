@@ -9,9 +9,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SpeechRepo(implicit val dbCtx: PostgresAsyncContext[CamelCase.type], ec: ExecutionContext) extends QuillImplicit {
 
-  //TODO remove
-  println("ec: " + ec.toString)
-
   import dbCtx._
 
   val specRequestTable       = quote(querySchema[SpeechRequest]("speech_request"))
@@ -46,12 +43,12 @@ class SpeechRepo(implicit val dbCtx: PostgresAsyncContext[CamelCase.type], ec: E
       .run(query)
   }
 
-  def addSpeechRequest(speechRequest: SpeechRequest) = {
+  def addSpeechRequest(speechRequest: SpeechRequest): Future[SpeechRequest] = {
     dbCtx
       .run(insertSpeechRequest(speechRequest))
   }
 
-  def addSpeechFileProcess(speechFileProcess: SpeechFileProcess) = {
+  def addSpeechFileProcess(speechFileProcess: SpeechFileProcess): Future[SpeechFileProcess] = {
     dbCtx
       .run(insertSpeechFileProcess(speechFileProcess))
   }

@@ -26,8 +26,7 @@ class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext) exten
           s"Your request contains invalid urls, valid [${validUrlSet.mkString(",")}], invalid [${invalidUrlSet.mkString(",")}]"
         )
       )
-    }
-    else if (validUrlSet.isEmpty) {
+    } else if (validUrlSet.isEmpty) {
       Future.successful(
         Left(
           s"Your request url's empty"
