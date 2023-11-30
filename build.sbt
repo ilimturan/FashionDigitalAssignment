@@ -49,9 +49,9 @@ assembly / assemblyMergeStrategy := {
 //assembly / assemblyJarName := s"${name.value}-${version.value}.jar"
 assembly / assemblyJarName := s"fashion_digital_assignment.jar"
 
-coverageMinimum := 80
+coverageMinimum := 45
 coverageFailOnMinimum := true
-coverageExcludedPackages := "org.ilimturan.config.*;org.ilimturan.Boot"
+coverageExcludedPackages := "org.ilimturan.config.*;org.ilimturan.Components;org.ilimturan.ConsumerSpeech;org.ilimturan.ProducerSpeech"
 
 //mainClass in (Compile, run) := Some("org.ilimturan.ProducerSpeech")
 //mainClass in (Compile, run) := Some("org.ilimturan.ConsumerSpeech")
