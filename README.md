@@ -26,9 +26,9 @@ sbt "run-main org.ilimturan.ProducerSpeech"
 sbt "run-main org.ilimturan.ConsumerSpeech"
 ```
 
-### Stop App
+### Stop Docker Compose
 
-To stop the applications, use the following command:
+To stop the docker compose, use the following command:
 
 ```bash
 docker-compose -f docker-compose.yml down
@@ -82,12 +82,14 @@ sbt scalafmt
 sbt test:scalafmt
 ```
 
-##Tech Stack
+## Tech Stack
 
 - Scala 2.13.8
+- Sbt 1.5.8
 - Akka Http for routing
 - Akka Stream for computing streaming data
 - Alpakka for CSV parsing
 - Quill for ORM and database querying
 - PostgreSQL for the relational database
-
+- Docker and docker compose for containerization
+- Plugins: sbt-updates, sbt-buildinfo, sbt-assembly, sbt-scoverage, sbt-scalafmt
