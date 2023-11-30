@@ -5,7 +5,8 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.typesafe.scalalogging.StrictLogging
 import org.ilimturan.services.SpeechService
-import spray.json.{JsObject, JsString}
+import spray.json._
+import org.ilimturan.models.Protocols._
 
 class RoutesProducer(speechService: SpeechService) extends StrictLogging with SprayJsonSupport {
 

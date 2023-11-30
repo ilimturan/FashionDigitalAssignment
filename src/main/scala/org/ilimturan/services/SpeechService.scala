@@ -14,7 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext, mat: Materializer) extends StrictLogging {
 
-  def handleEvaluation(urls: Seq[String]): Future[Either[String, String]] = {
+  def handleEvaluation(urls: Seq[String]): Future[SpeechResponse] = {
 
     logger.info(s"Received URLs: ${urls.mkString(", ")}")
 
@@ -25,14 +25,14 @@ class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext, mat: 
 
     if (invalidUrlSet.nonEmpty) {
       Future.successful(
-        Left(
-          s"Your request contains invalid urls, valid [${validUrlSet.mkString(",")}], invalid [${invalidUrlSet.mkString(",")}]"
+        SpeechResponse(
+          errors = Seq(s"Your request contains invalid urls [${invalidUrlSet.mkString(",")}]")
         )
       )
     } else if (validUrlSet.isEmpty) {
       Future.successful(
-        Left(
-          s"Your request url's empty"
+        SpeechResponse(
+          errors = Seq(s"Your request url's empty")
         )
       )
     } else {
@@ -57,13 +57,24 @@ class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext, mat: 
           val speechFileProcessResultF = Future.sequence(speechFileProcessSeqF).map(res => res.sum)
 
           speechFileProcessResultF.map { count =>
-            Right(s"Your request has been queued, url count [${urlSet.size}], job count [$count] ")
+            SpeechResponse(
+              message = Some(s"Your request has been queued"),
+              data = Some(
+                SpeechResponseData(
+                  urlCount = urlSet.size,
+                  jobCount = count
+                )
+              )
+            )
           }
 
         }
         .recover { case e: Exception =>
           logger.error(e.getMessage)
-          Left(s"Your request can not queued: " + e.getMessage)
+
+          SpeechResponse(
+            errors = Seq(s"Your request can not queued: " + e.getMessage)
+          )
         }
     }
 

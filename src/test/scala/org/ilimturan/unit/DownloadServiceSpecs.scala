@@ -7,12 +7,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{Matchers, WordSpec}
 
-class DownloadServiceSpecs
-    extends WordSpec
-    with Matchers
-    with ScalatestRouteTest
-    with StrictLogging
-    with ScalaFutures {
+class DownloadServiceSpecs extends WordSpec with Matchers with ScalatestRouteTest with StrictLogging with ScalaFutures {
 
   // for futureValue timeout
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(timeout = scaled(Span(3, Seconds)))

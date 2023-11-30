@@ -27,7 +27,6 @@ object ConsumerSpeech extends App with StrictLogging with Components {
       .newServerAt(ConsumerConfig.httpHost, ConsumerConfig.httpPort)
       .bindFlow(routes.routes)
       .map { _ =>
-
         val parser   = new SpeechCsvParser()
         val consumer = new SpeechConsumer(speechService, parser, downloadService)
         consumer.init()

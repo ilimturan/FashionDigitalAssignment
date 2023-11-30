@@ -32,4 +32,8 @@ object Protocols extends DefaultJsonProtocol {
   implicit val formatSpeechRequest     = jsonFormat3(SpeechRequest.apply)
   implicit val formatSpeechFileProcess = jsonFormat6(SpeechFileProcess.apply)
   implicit val formatPoliticalSpeech   = jsonFormat5(PoliticalSpeech.apply)
+
+  implicit val formatSpeechResponseData = jsonFormat2(SpeechResponseData.apply)
+  implicit val formatSpeechResponse     = jsonFormat3(SpeechResponse.apply)
+
 }

@@ -1,6 +1,7 @@
 package org.ilimturan.integration
 
 import akka.actor.ActorSystem
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest}
@@ -9,14 +10,21 @@ import com.typesafe.scalalogging.StrictLogging
 import io.getquill.{CamelCase, PostgresAsyncContext}
 import org.ilimturan.ConsumerSpeech.dbEc
 import org.ilimturan.config.PostgresConfig
+import org.ilimturan.models.SpeechResponse
 import org.ilimturan.repos.SpeechRepo
 import org.ilimturan.routes.RoutesProducer
 import org.ilimturan.services.SpeechService
 import org.scalatest.{Matchers, WordSpec}
+import org.ilimturan.models.Protocols._
 
 import scala.concurrent.duration.DurationInt
 
-class ProducerIntegrationSpecs extends WordSpec with Matchers with ScalatestRouteTest with StrictLogging {
+class ProducerIntegrationSpecs
+    extends WordSpec
+    with Matchers
+    with ScalatestRouteTest
+    with StrictLogging
+    with SprayJsonSupport {
 
   implicit val timeout: RouteTestTimeout                = RouteTestTimeout(30.seconds.dilated)
   implicit val actorSystem                              = ActorSystem()
@@ -57,11 +65,11 @@ class ProducerIntegrationSpecs extends WordSpec with Matchers with ScalatestRout
       Get(s"/evaluation")
         .withHeaders(header) ~> route.routes ~> check {
 
-        val response         = responseAs[String].trim
-        val expectedResponse = s"Your request url's empty".trim
+        val response = responseAs[SpeechResponse]
 
         status shouldBe StatusCodes.OK
-        response shouldBe expectedResponse
+        response.errors.size shouldBe 1
+        response.data.isEmpty shouldBe true
       }
     }
 
@@ -70,11 +78,11 @@ class ProducerIntegrationSpecs extends WordSpec with Matchers with ScalatestRout
       Get(s"/evaluation?url=$urlStr")
         .withHeaders(header) ~> route.routes ~> check {
 
-        val response         = responseAs[String].trim
-        val expectedResponse = s"Your request contains invalid urls, valid [], invalid [$urlStr]".trim
+        val response = responseAs[SpeechResponse]
 
         status shouldBe StatusCodes.OK
-        response shouldBe expectedResponse
+        response.errors.size shouldBe 1
+        response.data.isEmpty shouldBe true
 
       }
     }
@@ -86,11 +94,11 @@ class ProducerIntegrationSpecs extends WordSpec with Matchers with ScalatestRout
       Get(s"/evaluation?url=$urlStr1&url=$urlStr2")
         .withHeaders(header) ~> route.routes ~> check {
 
-        val response         = responseAs[String].trim
-        val expectedResponse = s"Your request contains invalid urls, valid [$urlStr2], invalid [$urlStr1]".trim
+        val response = responseAs[SpeechResponse]
 
         status shouldBe StatusCodes.OK
-        response shouldBe expectedResponse
+        response.errors.size shouldBe 1
+        response.data.isEmpty shouldBe true
 
       }
     }
@@ -101,11 +109,12 @@ class ProducerIntegrationSpecs extends WordSpec with Matchers with ScalatestRout
       Get(s"/evaluation?url=$urlStr")
         .withHeaders(header) ~> route.routes ~> check {
 
-        val response         = responseAs[String].trim
-        val expectedResponse = s"Your request has been queued, url count [1], job count [1]".trim
+        val response = responseAs[SpeechResponse]
 
         status shouldBe StatusCodes.OK
-        response shouldBe expectedResponse
+        response.errors.size shouldBe 0
+        response.data.nonEmpty shouldBe true
+        response.message.nonEmpty shouldBe true
 
       }
     }
@@ -116,11 +125,13 @@ class ProducerIntegrationSpecs extends WordSpec with Matchers with ScalatestRout
       Get(s"/evaluation?url=$urlStr&url=$urlStr")
         .withHeaders(header) ~> route.routes ~> check {
 
-        val response         = responseAs[String].trim
-        val expectedResponse = s"Your request has been queued, url count [1], job count [1]".trim
+        val response = responseAs[SpeechResponse]
 
         status shouldBe StatusCodes.OK
-        response shouldBe expectedResponse
+        response.errors.size shouldBe 0
+        response.data.get.jobCount shouldBe 1
+        response.data.get.urlCount shouldBe 1
+        response.message.nonEmpty shouldBe true
 
       }
     }
@@ -133,11 +144,14 @@ class ProducerIntegrationSpecs extends WordSpec with Matchers with ScalatestRout
 
       Get(s"/evaluation?url=$urlStr1&url=$urlStr2&url=$urlStr3")
         .withHeaders(header) ~> route.routes ~> check {
-        val response         = responseAs[String].trim
-        val expectedResponse = s"Your request has been queued, url count [3], job count [3]".trim
+
+        val response = responseAs[SpeechResponse]
 
         status shouldBe StatusCodes.OK
-        response shouldBe expectedResponse
+        response.errors.size shouldBe 0
+        response.data.get.jobCount shouldBe 3
+        response.data.get.urlCount shouldBe 3
+        response.message.nonEmpty shouldBe true
 
       }
     }
