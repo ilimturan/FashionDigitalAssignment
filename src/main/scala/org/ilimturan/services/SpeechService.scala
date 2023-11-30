@@ -1,5 +1,8 @@
 package org.ilimturan.services
 
+import akka.NotUsed
+import akka.stream.Materializer
+import akka.stream.scaladsl.Source
 import com.typesafe.scalalogging.StrictLogging
 import org.ilimturan.enums.SPEECH_PROCESS_STATUS
 import org.ilimturan.models._
@@ -9,7 +12,7 @@ import org.joda.time.DateTime
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext) extends StrictLogging {
+class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext, mat: Materializer) extends StrictLogging {
 
   def handleEvaluation(urls: Seq[String]): Future[Either[String, String]] = {
 
@@ -76,6 +79,31 @@ class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext) exten
 
   def addPoliticalSpeech(politicalSpeech: PoliticalSpeech): Future[PoliticalSpeech] = {
     speechRepo.addPoliticalSpeech(politicalSpeech)
+  }
+
+  def addPoliticalSpeechFromSource(source: Source[PoliticParsed, NotUsed]): Future[Int] = {
+
+    println("addPoliticalSpeechFromSource")
+    source
+      //.throttle(1000, 1.seconds)
+      //.buffer(500, OverflowStrategy.backpressure)
+      .mapAsync(5) { row =>
+        val politicalSpeech = PoliticalSpeech(-1, row.speaker, row.topic, row.wordCount, row.dateOfSpeech)
+
+        addPoliticalSpeech(politicalSpeech)
+          .map(_ => 1)
+
+      }
+      .runFold(0) { case (acc, count) =>
+        if (acc > 0 && acc % 100 == 0) {
+          logger.info(s"Processed row count [$acc]")
+        }
+        acc + count
+      }
+      .recover { case e: Exception =>
+        logger.error("Error when data persist to DB", e)
+        0
+      }
   }
 
 }

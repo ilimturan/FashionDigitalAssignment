@@ -13,4 +13,4 @@ Test
 > docker compose -f docker-compose-test.yml down
 
 Coverage report
-> sbt clean coverageReport
+> sbt clean coverage test coverageReport
