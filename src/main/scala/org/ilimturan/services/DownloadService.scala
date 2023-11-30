@@ -16,7 +16,7 @@ class DownloadService(implicit ec: ExecutionContext, system: ActorSystem) extend
   def download(downloadUrl: String): Future[Either[String, TemporaryDownloadData]] = {
 
     val maybeRequest = Try {
-      HttpRequest(uri = downloadUrl)
+      HttpRequest(uri = downloadUrl) //downloadUrl could be invalid
     }.toOption
 
     maybeRequest match {
@@ -26,11 +26,14 @@ class DownloadService(implicit ec: ExecutionContext, system: ActorSystem) extend
           .map { response =>
             val statusCodeInt = response.status.intValue()
             if (statusCodeInt >= 200 && statusCodeInt <= 299) {
+
               val contentType = response.entity.contentType
               val inputStream = response.entity.dataBytes
                 .runWith(StreamConverters.asInputStream())
+
               logger.info(s"Download completed, statusCode [$statusCodeInt], url [$downloadUrl]")
-              Right(TemporaryDownloadData(contentType, new BOMInputStream(inputStream)))
+              Right(TemporaryDownloadData(new BOMInputStream(inputStream), Some(contentType)))
+
             } else {
               logger.warn(s"HttpError, statusCode [$statusCodeInt], url [$downloadUrl]")
               Left(s"HttpError, statusCode [$statusCodeInt], url [$downloadUrl]")

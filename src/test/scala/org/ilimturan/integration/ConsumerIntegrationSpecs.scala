@@ -10,11 +10,7 @@ import org.scalatest.{Matchers, WordSpec}
 
 import scala.concurrent.duration.DurationInt
 
-class ConsumerIntegrationSpecs
-    extends WordSpec
-    with Matchers
-    with ScalatestRouteTest
-    with StrictLogging {
+class ConsumerIntegrationSpecs extends WordSpec with Matchers with ScalatestRouteTest with StrictLogging {
 
   implicit val timeout: RouteTestTimeout = RouteTestTimeout(30.seconds.dilated)
   implicit val actorSystem               = ActorSystem()

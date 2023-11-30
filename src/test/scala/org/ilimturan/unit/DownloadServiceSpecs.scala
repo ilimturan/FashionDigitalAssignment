@@ -27,13 +27,13 @@ class DownloadServiceSpecs
     val service = new DownloadService()
 
     "when url is invalid" in {
-      val url = "test_wrong_url"
+      val url    = "test_wrong_url"
       val result = service.download(url)
       result.futureValue.isLeft shouldEqual true
     }
 
     "when url returns 4xx" in {
-      val url = "https://www.youtube.com/asdasdas"
+      val url    = "https://www.youtube.com/asdasdas"
       val result = service.download(url)
       whenReady(result) { value =>
         value.isLeft shouldEqual true
@@ -41,7 +41,7 @@ class DownloadServiceSpecs
     }
 
     "when url returns 2xx" in {
-      val url = "https://fid-recruiting.s3-eu-west-1.amazonaws.com/politics.csv"
+      val url    = "https://fid-recruiting.s3-eu-west-1.amazonaws.com/politics.csv"
       val result = service.download(url)
       whenReady(result) { value =>
         value.isRight shouldEqual true
