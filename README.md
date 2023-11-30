@@ -10,7 +10,7 @@ provide to a simple stream/flow pipeline (producer, consumer, aggregator, and qu
 To begin, start PostgreSQL locally:
 
 ```bash
-docker-compose -f docker-compose.yml up -d
+docker compose -f docker-compose.yml up -d
 ```
 
 This command initiates a PostgreSQL server and sets up the relational database by creating tables.
@@ -20,10 +20,10 @@ This command initiates a PostgreSQL server and sets up the relational database b
 The next step is to start the applications:
 
 ```bash
-sbt "run-main org.ilimturan.ProducerSpeech"
+sbt "runMain org.ilimturan.ProducerSpeech"
 ```
 ```bash
-sbt "run-main org.ilimturan.ConsumerSpeech"
+sbt "runMain org.ilimturan.ConsumerSpeech"
 ```
 
 ### Stop Docker Compose
@@ -31,7 +31,7 @@ sbt "run-main org.ilimturan.ConsumerSpeech"
 To stop the docker compose, use the following command:
 
 ```bash
-docker-compose -f docker-compose.yml down
+docker compose -f docker-compose.yml down
 ```
 
 ## Tests
@@ -41,7 +41,7 @@ docker-compose -f docker-compose.yml down
 For integration tests (no need for unit tests), first, run:
 
 ```bash
-docker-compose -f docker-compose-test.yml up -d
+docker compose -f docker-compose-test.yml up -d
 ```
 
 This command creates a separate PostgreSQL test database.
@@ -67,7 +67,7 @@ sbt clean coverage test coverageReport
 To stop the testing environment, use:
 
 ```bash
-docker-compose -f docker-compose-test.yml down
+docker compose -f docker-compose-test.yml down
 ```
 
 ## Code Formatting
