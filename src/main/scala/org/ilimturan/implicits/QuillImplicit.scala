@@ -2,8 +2,8 @@ package org.ilimturan.implicits
 
 import io.getquill.MappedEncoding
 import org.ilimturan.enums.SPEECH_PROCESS_STATUS.SPEECH_PROCESS_STATUS
-import org.ilimturan.enums.{SPEECH_PROCESS_STATUS, STATUS}
 import org.ilimturan.enums.STATUS.STATUS
+import org.ilimturan.enums.{SPEECH_PROCESS_STATUS, STATUS}
 
 class QuillImplicit {
 

@@ -84,24 +84,28 @@ class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext, mat: 
     speechRepo.getLatestJob()
   }
 
+  def getLatestCompletedJob(): Future[Option[SpeechFileProcess]] = {
+    speechRepo.getLatestCompletedJob()
+  }
+
   def updateJob(speechFileProcess: SpeechFileProcess): Future[SpeechFileProcess] = {
     speechRepo.updateJob(speechFileProcess)
   }
 
-  def addPoliticalSpeech(politicalSpeech: PoliticalSpeech): Future[PoliticalSpeech] = {
-    speechRepo.addPoliticalSpeech(politicalSpeech)
+  def addPoliticalSpeech(speech: Speech): Future[Speech] = {
+    speechRepo.addPoliticalSpeech(speech)
   }
 
   def addPoliticalSpeechFromSource(source: Source[PoliticParsed, NotUsed]): Future[Int] = {
 
-    println("addPoliticalSpeechFromSource")
     source
       //.throttle(1000, 1.seconds)
       //.buffer(500, OverflowStrategy.backpressure)
       .mapAsync(5) { row =>
-        val politicalSpeech = PoliticalSpeech(-1, row.speaker, row.topic, row.wordCount, row.dateOfSpeech)
+        val partitionId = (1900 + row.dateOfSpeech.getYear) //TODO fix, not safe
+        val speech      = Speech(-1, row.speaker, row.topic, row.wordCount, partitionId, row.dateOfSpeech)
 
-        addPoliticalSpeech(politicalSpeech)
+        addPoliticalSpeech(speech)
           .map(_ => 1)
 
       }
@@ -115,6 +119,93 @@ class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext, mat: 
         logger.error("Error when data persist to DB", e)
         0
       }
+  }
+
+  def speechCounts(): Future[List[AggPoliticianSpeechCount]] = {
+
+    speechRepo
+      .speechCounts()
+      .map { result =>
+        result
+          .map { row =>
+            AggPoliticianSpeechCount(-1, row._1, row._2, row._3)
+          }
+          .filter(_.aggCount > 0)
+          .sortBy(-_.aggCount)
+      }
+  }
+
+  def speechTopics(): Future[List[AggPoliticianSpeechTopicCount]] = {
+    //val currentDate      = new Date()
+    //val currentTimestamp = new Timestamp(currentDate.getTime())
+
+    speechRepo
+      .speechTopics()
+      .map { result =>
+        result
+          .map { row =>
+            AggPoliticianSpeechTopicCount(-1L, row._1._1, row._1._2, row._2)
+          }
+          .filter(_.aggCount > 0)
+          .sortBy(_.topicName)
+      }
+  }
+
+  def speechWordCount(): Future[List[AggPoliticianSpeechWordCount]] = {
+    speechRepo
+      .speechWordCount()
+      .map { result =>
+        result
+          .collect { row =>
+            row._2 match {
+              case Some(count) if count > 0 =>
+                (row._1, count)
+            }
+          }
+          .map { row =>
+            AggPoliticianSpeechWordCount(-1L, row._1, row._2)
+          }
+          .filter(_.aggCount > 0)
+      }
+  }
+
+  def getSpeechAggResult(
+      mostYearMaybe: Option[String],
+      mostTopicMaybe: Option[String]
+  ): Future[SpeechAggResponse] = {
+
+    val res1F = SpeechValidator.queryParamToYearFilter(mostYearMaybe) match {
+      case Some(id) => speechRepo.getMostSpeechResultWithPartitionId(id)
+      case None     => speechRepo.getMostSpeechResult()
+    }
+    val res2F = speechRepo.getMostSecurityResult(mostTopicMaybe.getOrElse("Innere Sicherheit"))
+    val res3F = speechRepo.getLeastWordyResult()
+
+    for {
+      res1 <- res1F
+      res2 <- res2F
+      res3 <- res3F
+    } yield {
+
+      SpeechAggResponse(
+        res1.map(_.politicianName),
+        res2.map(_.politicianName),
+        res3.map(_._1)
+      )
+    }
+
+  }
+
+  def addAggPoliticianSpeechCount(agg: AggPoliticianSpeechCount): Future[AggPoliticianSpeechCount] = {
+    speechRepo.addAggPoliticianSpeechCount(agg)
+  }
+
+  def addAggPoliticianSpeechTopicCount(agg: AggPoliticianSpeechTopicCount): Future[AggPoliticianSpeechTopicCount] = {
+    speechRepo.addAggPoliticianSpeechTopicCount(agg)
+  }
+
+  def addAggPoliticianSpeechWordCount(agg: AggPoliticianSpeechWordCount): Future[AggPoliticianSpeechWordCount] = {
+    speechRepo.addAggPoliticianSpeechWordCount(agg)
   }
 
 }

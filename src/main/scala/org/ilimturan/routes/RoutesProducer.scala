@@ -12,12 +12,12 @@ class RoutesProducer(speechService: SpeechService) extends StrictLogging with Sp
 
   val routes: Route = Route.seal(endpoints)
 
-  private def endpoints =
+  private def endpoints: Route =
     path("health") {
       get {
         complete(
           JsObject(
-            "name"    -> JsString("FashionDigitalAssignment"),
+            "name"    -> JsString("Producer"),
             "version" -> JsString("1.0.0"),
             "status"  -> JsString("ok")
           )
@@ -33,7 +33,6 @@ class RoutesProducer(speechService: SpeechService) extends StrictLogging with Sp
 
         }
       }
-
     }
 
 }

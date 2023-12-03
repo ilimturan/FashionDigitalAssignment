@@ -10,12 +10,12 @@ class RoutesConsumer() extends StrictLogging with SprayJsonSupport {
 
   val routes: Route = Route.seal(endpoints)
 
-  private def endpoints =
+  private def endpoints: Route =
     path("health") {
       get {
         complete(
           JsObject(
-            "name"    -> JsString("FashionDigitalAssignment"),
+            "name"    -> JsString("Consumer"),
             "version" -> JsString("1.0.0"),
             "status"  -> JsString("ok")
           )

@@ -4,7 +4,7 @@ import akka.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest}
 import akka.testkit.TestDuration
 import com.typesafe.scalalogging.StrictLogging
 import org.ilimturan.enums.SPEECH_PROCESS_STATUS
-import org.ilimturan.models.{PoliticalSpeech, SpeechFileProcess}
+import org.ilimturan.models.{Speech, SpeechFileProcess}
 import org.ilimturan.repos.SpeechRepo
 import org.ilimturan.services.SpeechService
 import org.joda.time.DateTime
@@ -104,7 +104,7 @@ class SpeechServiceSpecs
 
     "when addPoliticalSpeech" in {
 
-      val politicalSpeech = PoliticalSpeech(
+      val speech = Speech(
         id = 99,
         politicianName = "Test politicianName",
         topicName = "Test topicName",
@@ -112,10 +112,10 @@ class SpeechServiceSpecs
         speechDate = new Date
       )
 
-      when(mockedRepo.addPoliticalSpeech(politicalSpeech)).thenReturn(Future.successful(politicalSpeech))
+      when(mockedRepo.addPoliticalSpeech(speech)).thenReturn(Future.successful(speech))
 
-      val result = service.addPoliticalSpeech(politicalSpeech)
-      result.futureValue shouldEqual politicalSpeech
+      val result = service.addPoliticalSpeech(speech)
+      result.futureValue shouldEqual speech
     }
 
     // TODO fix, it throw NPE, OR, java.io.IOException: Stream closed
@@ -126,7 +126,7 @@ class SpeechServiceSpecs
       val inputStream     = getClass.getResourceAsStream("/politics.csv")
       val bomInputStream  = new BOMInputStream(inputStream)
       val source          = parser.toAkkaSource(bomInputStream)
-      val politicalSpeech = PoliticalSpeech(
+      val speech = PoliticalSpeech(
         id = 99,
         politicianName = "Test politicianName",
         topicName = "Test topicName",
@@ -134,7 +134,7 @@ class SpeechServiceSpecs
         speechDate = new Date
       )
 
-      when(mockedRepo.addPoliticalSpeech(politicalSpeech)).thenReturn(Future.successful(politicalSpeech))
+      when(mockedRepo.addPoliticalSpeech(speech)).thenReturn(Future.successful(speech))
 
       val result = service.addPoliticalSpeechFromSource(source)
       result.futureValue shouldEqual 4

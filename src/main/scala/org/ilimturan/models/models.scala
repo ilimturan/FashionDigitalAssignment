@@ -22,11 +22,12 @@ case class SpeechFileProcess(
     insertTime: DateTime
 )
 
-case class PoliticalSpeech(
+case class Speech(
     id: Long,
     politicianName: String,
     topicName: String,
     wordCount: Int,
+    partitionId: Int, //year
     speechDate: Date
 )
 
