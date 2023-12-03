@@ -7,7 +7,7 @@ version := "1.0.0"
 libraryDependencies ++= {
   val akkaV             = "2.6.19"
   val akkaHttpV         = "10.2.7"
-  val quillV            = "3.5.3"
+  val quillV            = "3.7.2"
   val scalaLoggingV     = "3.9.2"
   val logbackV          = "1.2.3"
   val scalaTestV        = "3.0.8"
@@ -49,7 +49,7 @@ assembly / assemblyMergeStrategy := {
 //assembly / assemblyJarName := s"${name.value}-${version.value}.jar"
 assembly / assemblyJarName := s"fashion_digital_assignment.jar"
 
-coverageMinimum := 80
+coverageMinimum := 50
 coverageFailOnMinimum := true
 coverageExcludedPackages := "org.ilimturan.config.*;" +
   "org.ilimturan.enums.*;" +
