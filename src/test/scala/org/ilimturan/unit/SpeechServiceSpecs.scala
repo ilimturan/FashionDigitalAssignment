@@ -109,7 +109,8 @@ class SpeechServiceSpecs
         politicianName = "Test politicianName",
         topicName = "Test topicName",
         wordCount = 77,
-        speechDate = new Date
+        partitionId = 2000,
+        speechDate = new Date()
       )
 
       when(mockedRepo.addPoliticalSpeech(speech)).thenReturn(Future.successful(speech))
