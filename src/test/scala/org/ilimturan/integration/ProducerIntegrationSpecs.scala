@@ -8,14 +8,13 @@ import akka.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest}
 import akka.testkit.TestDuration
 import com.typesafe.scalalogging.StrictLogging
 import io.getquill.{CamelCase, PostgresAsyncContext}
-import org.ilimturan.ConsumerSpeech.dbEc
 import org.ilimturan.config.PostgresConfig
+import org.ilimturan.models.Protocols._
 import org.ilimturan.models.SpeechResponse
 import org.ilimturan.repos.SpeechRepo
 import org.ilimturan.routes.RoutesProducer
 import org.ilimturan.services.SpeechService
 import org.scalatest.{Matchers, WordSpec}
-import org.ilimturan.models.Protocols._
 
 import scala.concurrent.duration.DurationInt
 
@@ -31,11 +30,11 @@ class ProducerIntegrationSpecs
   implicit val executionContext                         = actorSystem.dispatcher
   val postgresCtx: PostgresAsyncContext[CamelCase.type] =
     new PostgresAsyncContext(CamelCase, PostgresConfig.dbPostgresConfig)
-  val speechRepo                                        = new SpeechRepo()(postgresCtx, dbEc)
+  val speechRepo                                        = new SpeechRepo()(postgresCtx, executionContext)
   val speechService                                     = new SpeechService(speechRepo)
   val route                                             = new RoutesProducer(speechService)
 
-  "run 'health' endpoint tests" should {
+  "run Producer endpoint tests" should {
 
     "return success health" in {
       Get(s"/health") ~> route.routes ~> check {
@@ -54,9 +53,6 @@ class ProducerIntegrationSpecs
         status shouldBe StatusCodes.NotFound
       }
     }
-  }
-
-  "run 'producer' endpoint tests" should {
 
     val header = RawHeader("Content-Type", "text/html; charset=UTF-8")
 
