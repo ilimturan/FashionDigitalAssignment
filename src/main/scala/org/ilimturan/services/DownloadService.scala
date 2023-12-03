@@ -13,6 +13,7 @@ import scala.util.Try
 
 class DownloadService(implicit ec: ExecutionContext, system: ActorSystem) extends StrictLogging {
 
+  //TODO check "ETag" or "Last mod"
   def download(downloadUrl: String): Future[Either[String, TemporaryDownloadData]] = {
 
     val maybeRequest = Try {

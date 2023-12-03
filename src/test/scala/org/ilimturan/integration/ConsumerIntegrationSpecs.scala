@@ -8,7 +8,7 @@ import org.scalatest.{Matchers, WordSpec}
 
 class ConsumerIntegrationSpecs extends WordSpec with Matchers with ScalatestRouteTest with StrictLogging {
 
-  "run 'health' endpoint tests" should {
+  "run Consumer endpoint tests" should {
 
     val route = new RoutesConsumer()
 
