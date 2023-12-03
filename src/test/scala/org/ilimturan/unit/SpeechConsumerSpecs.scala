@@ -104,8 +104,6 @@ class SpeechConsumerSpecs
 
       //val str = scala.io.Source.fromInputStream(bomInputStream).mkString
 
-      //println("str ----> " + str)
-
       val insertTime        = DateTime.now()
       val speechFileProcess = SpeechFileProcess(
         id = 201L,

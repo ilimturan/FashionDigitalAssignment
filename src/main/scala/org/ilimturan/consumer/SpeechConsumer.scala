@@ -19,7 +19,7 @@ class SpeechConsumer(speechService: SpeechService, speechCsvParser: SpeechCsvPar
 
   def init() = {
     val initialDelayDuration = 1.seconds
-    val intervalDuration     = 5.seconds
+    val intervalDuration     = 1.minutes
     getTickSource(initialDelayDuration, intervalDuration)
       .runWith(Sink.ignore)
     true
