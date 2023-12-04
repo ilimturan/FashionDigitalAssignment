@@ -46,6 +46,8 @@ assembly / assemblyMergeStrategy := {
   case _                             => MergeStrategy.first
 }
 
+test in assembly := {}
+
 //assembly / assemblyJarName := s"${name.value}-${version.value}.jar"
 assembly / assemblyJarName := s"fashion_digital_assignment.jar"
 
