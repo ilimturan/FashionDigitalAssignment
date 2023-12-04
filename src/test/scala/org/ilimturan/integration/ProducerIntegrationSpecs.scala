@@ -25,7 +25,7 @@ class ProducerIntegrationSpecs
     with StrictLogging
     with SprayJsonSupport {
 
-  implicit val timeout: RouteTestTimeout                = RouteTestTimeout(30.seconds.dilated)
+  implicit val timeout: RouteTestTimeout                = RouteTestTimeout(10.seconds.dilated)
   implicit val actorSystem                              = ActorSystem()
   implicit val executionContext                         = actorSystem.dispatcher
   val postgresCtx: PostgresAsyncContext[CamelCase.type] =

@@ -50,7 +50,7 @@ class SpeechConsumerSpecs
       when(mockedSpeechService.getLatestJob()).thenReturn(Future.successful(None))
 
       val initialDelayDuration = 0.seconds
-      val intervalDuration     = 1.seconds
+      val intervalDuration     = 10.seconds
 
       val result = consumer
         .getTickSource(initialDelayDuration, intervalDuration)
@@ -85,7 +85,7 @@ class SpeechConsumerSpecs
         .thenReturn(Future.successful(Left("Invalid Url")))
 
       val initialDelayDuration = 0.seconds
-      val intervalDuration     = 1.seconds
+      val intervalDuration     = 10.seconds
 
       val result = consumer
         .getTickSource(initialDelayDuration, intervalDuration)
@@ -152,7 +152,7 @@ class SpeechConsumerSpecs
         .thenReturn(Future.successful(4))
 
       val initialDelayDuration = 0.seconds
-      val intervalDuration     = 1.seconds
+      val intervalDuration     = 10.seconds
 
       val result = consumer
         .getTickSource(initialDelayDuration, intervalDuration)
