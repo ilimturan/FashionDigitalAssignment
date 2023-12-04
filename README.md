@@ -46,6 +46,12 @@ sbt "runMain org.ilimturan.QuerySpeech"
 [http://localhost:8080/evaluation?url=https://fid-recruiting.s3-eu-west-1.amazonaws.com/politics.csv](http://localhost:8080/evaluation?url=https://fid-recruiting.s3-eu-west-1.amazonaws.com/politics.csv)
 
 [http://localhost:8083/report?mostYear=:mostYear&mostTopic=:mostTopic](http://localhost:8083/report?mostYear=:mostYear&mostTopic=:mostTopic)
+
+Example:
+
+[http://localhost:8083/report?mostYear=2013](http://localhost:8083/report?mostYear=2013)
+
+
 ### Stop Docker Compose
 
 To stop the docker compose, use the following command:
