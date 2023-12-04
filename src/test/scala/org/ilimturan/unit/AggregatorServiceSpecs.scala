@@ -69,7 +69,7 @@ class AggregatorServiceSpecs
           id = id,
           politicianName = random.nextString(20),
           partitionId = 2000 + random.nextInt(20),
-          aggCount = random.nextInt(20)
+          aggCount = random.nextLong(20)
         )
       }.toList
 
@@ -78,7 +78,7 @@ class AggregatorServiceSpecs
           id = id,
           politicianName = random.nextString(20),
           topicName = "test",
-          aggCount = random.nextInt(20)
+          aggCount = random.nextLong(20)
         )
       }.toList
 
@@ -86,7 +86,7 @@ class AggregatorServiceSpecs
         AggPoliticianSpeechWordCount(
           id = id,
           politicianName = random.nextString(20),
-          aggCount = random.nextInt(20)
+          aggCount = random.nextLong(20)
         )
       }.toList
 

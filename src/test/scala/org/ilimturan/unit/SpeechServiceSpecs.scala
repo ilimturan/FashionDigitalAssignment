@@ -128,14 +128,6 @@ class SpeechServiceSpecs
       val inputStream    = getClass.getResourceAsStream("/politics.csv")
       val bomInputStream = new BOMInputStream(inputStream)
       val source         = parser.toAkkaSource(bomInputStream)
-      val speech         = Speech(
-        id = 99,
-        politicianName = "Test politicianName",
-        topicName = "Test topicName",
-        wordCount = 77,
-        partitionId = 2022,
-        speechDate = new Date
-      )
 
       when(mockedRepo.addPoliticalSpeech(any[Speech])).thenReturn(Future.successful(true))
 
