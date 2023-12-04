@@ -10,6 +10,7 @@ provide to a simple stream/flow pipeline (producer, consumer, aggregator, and qu
 To begin, start PostgreSQL locally:
 
 ```bash
+docker compose -f docker-compose.yml up
 docker compose -f docker-compose.yml up -d
 ```
 
@@ -19,13 +20,32 @@ This command initiates a PostgreSQL server and sets up the relational database b
 
 The next step is to start the applications:
 
+Start producer
+
 ```bash
 sbt "runMain org.ilimturan.ProducerSpeech"
 ```
+
+Start consumer service (downloader, parser/transformer)
 ```bash
 sbt "runMain org.ilimturan.ConsumerSpeech"
 ```
 
+Start aggregator service
+```bash
+sbt "runMain org.ilimturan.AggregatorSpeech"
+```
+
+Start query service
+```bash
+sbt "runMain org.ilimturan.QuerySpeech"
+```
+
+### Endpoints:
+
+[http://localhost:8080/evaluation?url=https://fid-recruiting.s3-eu-west-1.amazonaws.com/politics.csv](http://localhost:8080/evaluation?url=https://fid-recruiting.s3-eu-west-1.amazonaws.com/politics.csv)
+
+[http://localhost:8083/report?mostYear=:mostYear&mostTopic=:mostTopic](http://localhost:8083/report?mostYear=:mostYear&mostTopic=:mostTopic)
 ### Stop Docker Compose
 
 To stop the docker compose, use the following command:
@@ -81,6 +101,18 @@ sbt scalafmt
 ```bash
 sbt test:scalafmt
 ```
+
+## Build docker image
+```bash
+docker build -t fashion-digital-assignment:latest .
+```
+
+For connect docker image
+```bash
+docker ps
+docker exec -it IMAGE_ID /bin/bash
+```
+
 
 ## Tech Stack
 
