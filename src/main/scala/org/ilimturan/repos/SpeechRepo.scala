@@ -123,6 +123,7 @@ class SpeechRepo(implicit val dbCtx: PostgresAsyncContext[CamelCase.type], ec: E
   def addPoliticalSpeech(speech: Speech) = {
     dbCtx
       .run(insertSpeech(speech))
+      .map(_ => true)
   }
 
   def speechCounts() = {

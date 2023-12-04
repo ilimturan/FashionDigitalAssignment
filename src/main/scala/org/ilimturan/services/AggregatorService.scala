@@ -28,6 +28,7 @@ class AggregatorService(speechService: SpeechService)(implicit ec: ExecutionCont
       initialDelayDuration: FiniteDuration,
       intervalDuration: FiniteDuration
   ): Source[Int, Cancellable] = {
+
     Source
       .tick(initialDelayDuration, intervalDuration, ())
       .mapAsync(1) { _ =>
@@ -43,40 +44,41 @@ class AggregatorService(speechService: SpeechService)(implicit ec: ExecutionCont
               logger.info(s"No need agg, last id [$lastProcessedId]")
               None
           }
-          .collect { case Some(job) =>
-            job
-          }
       }
-      .mapAsync(1) { _ =>
-        val speechCountsAggF    = speechService.speechCounts()
-        val speechTopicsAggF    = speechService.speechTopics()
-        val speechWordCountAggF = speechService.speechWordCount()
+      .mapAsync(1) {
+        case Some(_) =>
+          val speechCountsAggF    = speechService.speechCounts()
+          val speechTopicsAggF    = speechService.speechTopics()
+          val speechWordCountAggF = speechService.speechWordCount()
 
-        val resultF = for {
-          speechCountsAgg    <- speechCountsAggF
-          speechTopicsAgg    <- speechTopicsAggF
-          speechWordCountAgg <- speechWordCountAggF
-        } yield {
-          val agg1F = speechCountsAggSource(speechCountsAgg)
-          val agg2F = speechTopicsAggSource(speechTopicsAgg)
-          val agg3F = speechWordCountAggSource(speechWordCountAgg)
-
-          for {
-            agg1 <- agg1F
-            agg2 <- agg2F
-            agg3 <- agg3F
+          val resultF = for {
+            speechCountsAgg    <- speechCountsAggF
+            speechTopicsAgg    <- speechTopicsAggF
+            speechWordCountAgg <- speechWordCountAggF
           } yield {
-            logger.info(s"Agg completed, agg1 count [${agg1}], agg2 count [${agg2}], agg3 count [${agg3}]")
-            agg1 + agg2 + agg3
+
+            val agg1F = speechCountsAggSource(speechCountsAgg)
+            val agg2F = speechTopicsAggSource(speechTopicsAgg)
+            val agg3F = speechWordCountAggSource(speechWordCountAgg)
+
+            for {
+              agg1 <- agg1F
+              agg2 <- agg2F
+              agg3 <- agg3F
+            } yield {
+              logger.info(s"Agg completed, agg1 count [${agg1}], agg2 count [${agg2}], agg3 count [${agg3}]")
+              agg1 + agg2 + agg3
+            }
+
           }
 
-        }
-
-        resultF.flatten
-          .recover { case e: Exception =>
-            logger.error("Error when calculating agg result", e)
-            0
-          }
+          resultF.flatten
+            .recover { case e: Exception =>
+              logger.error("Error when calculating agg result", e)
+              0
+            }
+        case None    =>
+          Future.successful(0)
       }
   }
 

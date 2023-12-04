@@ -92,8 +92,10 @@ class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext, mat: 
     speechRepo.updateJob(speechFileProcess)
   }
 
-  def addPoliticalSpeech(speech: Speech): Future[Speech] = {
-    speechRepo.addPoliticalSpeech(speech)
+  def addPoliticalSpeech(speech: Speech): Future[Boolean] = {
+    speechRepo
+      .addPoliticalSpeech(speech)
+      .map(_ => true)
   }
 
   def addPoliticalSpeechFromSource(source: Source[PoliticParsed, NotUsed]): Future[Int] = {
@@ -196,16 +198,22 @@ class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext, mat: 
 
   }
 
-  def addAggPoliticianSpeechCount(agg: AggPoliticianSpeechCount): Future[AggPoliticianSpeechCount] = {
-    speechRepo.addAggPoliticianSpeechCount(agg)
+  def addAggPoliticianSpeechCount(agg: AggPoliticianSpeechCount) = {
+    speechRepo
+      .addAggPoliticianSpeechCount(agg)
+      .map(_ => true)
   }
 
-  def addAggPoliticianSpeechTopicCount(agg: AggPoliticianSpeechTopicCount): Future[AggPoliticianSpeechTopicCount] = {
-    speechRepo.addAggPoliticianSpeechTopicCount(agg)
+  def addAggPoliticianSpeechTopicCount(agg: AggPoliticianSpeechTopicCount) = {
+    speechRepo
+      .addAggPoliticianSpeechTopicCount(agg)
+      .map(_ => true)
   }
 
-  def addAggPoliticianSpeechWordCount(agg: AggPoliticianSpeechWordCount): Future[AggPoliticianSpeechWordCount] = {
-    speechRepo.addAggPoliticianSpeechWordCount(agg)
+  def addAggPoliticianSpeechWordCount(agg: AggPoliticianSpeechWordCount) = {
+    speechRepo
+      .addAggPoliticianSpeechWordCount(agg)
+      .map(_ => true)
   }
 
 }
