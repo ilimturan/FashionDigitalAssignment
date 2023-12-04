@@ -9,7 +9,7 @@ import org.ilimturan.models._
 import org.ilimturan.repos.SpeechRepo
 import org.ilimturan.validator.SpeechValidator
 import org.joda.time.DateTime
-
+import java.time.ZoneId
 import scala.concurrent.{ExecutionContext, Future}
 
 class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext, mat: Materializer) extends StrictLogging {
@@ -104,7 +104,8 @@ class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext, mat: 
       //.throttle(1000, 1.seconds)
       //.buffer(500, OverflowStrategy.backpressure)
       .mapAsync(5) { row =>
-        val partitionId = (1900 + row.dateOfSpeech.getYear) //TODO fix, not safe
+        val localDate   = row.dateOfSpeech.toInstant.atZone(ZoneId.systemDefault).toLocalDate
+        val partitionId = localDate.getYear
         val speech      = Speech(-1, row.speaker, row.topic, row.wordCount, partitionId, row.dateOfSpeech)
 
         addPoliticalSpeech(speech)
