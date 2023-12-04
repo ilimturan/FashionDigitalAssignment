@@ -22,53 +22,17 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=ad@2343fsdf@SF
       - POSTGRES_DATABASE=fashion_digital_assignment
+      - CLASS_NAME=com.pricing.ProducerSpeech
+      - HEAP_SIZE_MIN=32M
+      - HEAP_SIZE_MAX=256M
     depends_on:
       - postgres
     networks:
       - my-network
-    command: sbt "runMain org.ilimturan.ProducerSpeech"
+    command: java -Xms$HEAP_SIZE_MIN -Xmx$HEAP_SIZE_MAX -cp /app/fashion_digital_assignment.jar $CLASS_NAME
+    #command: sbt "runMain org.ilimturan.ProducerSpeech"
 
-  app-consumer-service:
-    image: fashion-digital-assignment:latest
-    ports:
-      - "8081:8081"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=ad@2343fsdf@SF
-      - POSTGRES_DATABASE=fashion_digital_assignment
-    depends_on:
-      - postgres
-    networks:
-      - my-network
-    command: sbt "runMain org.ilimturan.ConsumerSpeech"
-
-  app-aggregator-service:
-    image: fashion-digital-assignment:latest
-    ports:
-      - "8082:8082"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=ad@2343fsdf@SF
-      - POSTGRES_DATABASE=fashion_digital_assignment
-    depends_on:
-      - postgres
-    networks:
-      - my-network
-    command: sbt "runMain org.ilimturan.AggregatorSpeech"
-
-  app-query-service:
-    image: fashion-digital-assignment:latest
-    ports:
-      - "8083:8083"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=ad@2343fsdf@SF
-      - POSTGRES_DATABASE=fashion_digital_assignment
-    depends_on:
-      - postgres
-    networks:
-      - my-network
-    command: sbt "runMain org.ilimturan.QuerySpeech"
 networks:
   my-network:
     driver: bridge
+

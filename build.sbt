@@ -50,6 +50,7 @@ test in assembly := {}
 
 //assembly / assemblyJarName := s"${name.value}-${version.value}.jar"
 assembly / assemblyJarName := s"fashion_digital_assignment.jar"
+target in assembly := file(".")
 
 coverageMinimum := 80
 coverageFailOnMinimum := true

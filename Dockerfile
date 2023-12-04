@@ -1,5 +1,4 @@
-FROM mozilla/sbt:latest
-ENV SBT_VERSION 1.5.8
-WORKDIR /fsh
-COPY . /fsh
-RUN sbt assembly
+FROM hseeberger/scala-sbt:eclipse-temurin-11.0.14.1_1.6.2_3.1.1
+WORKDIR /app
+COPY . /app
+RUN sbt clean assembly

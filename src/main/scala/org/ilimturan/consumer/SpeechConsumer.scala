@@ -22,6 +22,7 @@ class SpeechConsumer(speechService: SpeechService, speechCsvParser: SpeechCsvPar
     val intervalDuration     = 1.minutes
     getTickSource(initialDelayDuration, intervalDuration)
       .runWith(Sink.ignore)
+    logger.info("Consumer started")
     true
   }
 
