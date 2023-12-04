@@ -165,7 +165,7 @@ class SpeechService(speechRepo: SpeechRepo)(implicit ec: ExecutionContext, mat: 
             }
           }
           .map { row =>
-            AggPoliticianSpeechWordCount(-1L, row._1, row._2)
+            AggPoliticianSpeechWordCount(-1L, row._1, row._2.toLong)
           }
           .filter(_.aggCount > 0)
       }
