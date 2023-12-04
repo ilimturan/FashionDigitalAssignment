@@ -48,7 +48,6 @@ assembly / assemblyMergeStrategy := {
 
 test in assembly := {}
 
-//assembly / assemblyJarName := s"${name.value}-${version.value}.jar"
 assembly / assemblyJarName := s"fashion_digital_assignment.jar"
 target in assembly := file(".")
 
@@ -65,6 +64,3 @@ coverageExcludedPackages := "org.ilimturan.config.*;" +
   "org.ilimturan.AggregatorSpeech;" +
   "org.ilimturan.QuerySpeech;" +
   "org.ilimturan.ProducerSpeech"
-
-//mainClass in (Compile, run) := Some("org.ilimturan.ProducerSpeech")
-//mainClass in (Compile, run) := Some("org.ilimturan.ConsumerSpeech")
